@@ -1,0 +1,49 @@
+import os,sys
+import subprocess
+
+
+
+dbuser="root"
+dbpass="xxx"
+
+MYSQL="/usr/local/mysql/bin/mysql"
+
+
+
+
+mysql_master=['10.11.226.238:3307', '10.11.226.230:3307', '10.23.26.243:3306', '10.23.26.224:3306', '10.11.226.244:3306', '10.23.26.223:3308', '10.23.26.239:3308', '10.11.226.226:3308', '10.11.226.221:3306', '10.11.226.210:3307', '10.11.226.224:3306', '10.23.26.241:3307']
+
+
+def execute_cmd(cmd):
+    rts = []
+    p = subprocess.Popen(cmd,
+                         shell=True,
+                         stdin=subprocess.PIPE,
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE)
+    p.wait()
+    stdout, stderr = p.communicate()
+    if p.returncode != 0:
+        return p.returncode, stderr
+    #for line in stdout:
+    #   rts.append(line.strip('\n')
+    print (stdout)
+    return p.returncode, stdout
+
+
+def main():
+    set_cmd = ""
+    #print("number of master is: %s",len(mysql_master))
+    #print("distinc number of master is: %s",len(set(mysql_master)))
+    #print(set(mysql_master))
+    #print(mysql_master)
+    #print("distinc number of master is: %s",len(set(mysql_master)))
+    for ip in mysql_master:
+        set_cmd = MYSQL+" -u"+dbuser+" -p"+dbpass+" -h"+ip.split(":")[0]+" -P"+ip.split(":")[1]+" -e 'show variables like \"read_only\";'"
+        #set_cmd = MYSQL+" -u"+dbuser+" -p"+dbpass+" -h"+ip.split(":")[0]+" -P"+ip.split(":")[1]+" -e 'stop slave ;set global read_only=0;'"
+        print(set_cmd)
+        execute_cmd(set_cmd)
+
+
+if __name__ == '__main__':
+    main()
