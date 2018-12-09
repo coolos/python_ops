@@ -1,0 +1,15 @@
+import nmap
+
+nm = nmap.PortScanner()
+
+nm.scan('10.16.26.54', '3300-3320')
+
+for host in nm.all_hosts():
+     print('Host : %s (%s)' % (host, nm[host].hostname()))
+     print('State : %s' % nm[host].state())
+     for proto in nm[host].all_protocols():
+         print('Protocol : %s' % proto)
+ 
+         aport = nm[host][proto].keys()
+         for port in aport:
+             print ('port : %s\tstate : %s' % (port, nm[host][proto][port]['state']))
